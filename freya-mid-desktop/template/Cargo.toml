@@ -1,0 +1,25 @@
+[package]
+name = "freya-mid-app"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+freya = { version = "0.4.0-rc.19", features = ["icons", "material-design", "router"] }
+tokio = { version = "1.0", features = ["full"] }
+reqwest = { version = "0.11", features = ["json", "rustls-tls"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+open = "5.0"
+rfd = "0.14"
+
+[package.metadata.packager]
+product-name = "Freya MID App"
+identifier = "com.mocika.freya.midapp"
+category = "Utility"
+authors = ["Your Name"]
+publisher = "Your Name"
+out-dir = "dist"
+icon = ["assets/logo.png"]
+
+[package.metadata.packager.deb]
+depends = ["libwebkit2gtk-4.0-37", "libgtk-3-0"]
