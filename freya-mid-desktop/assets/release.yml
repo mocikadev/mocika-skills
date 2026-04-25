@@ -1,0 +1,102 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+env:
+  CARGO_TERM_COLOR: always
+
+permissions:
+  contents: write
+
+jobs:
+  verify:
+    name: Verify release tag
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check tag matches Cargo.toml version
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          # 提取无 v 前缀的版本号
+          TAG_VER="${TAG#v}"
+          CARGO_VERSION="$(grep '^version' Cargo.toml | head -1 | cut -d'"' -f2)"
+          if [ "$TAG_VER" != "$CARGO_VERSION" ]; then
+            echo "error: tag '$TAG_VER' does not match Cargo.toml version '$CARGO_VERSION'"
+            exit 1
+          fi
+          echo "OK: $TAG matches $CARGO_VERSION"
+
+  build:
+    name: Build · ${{ matrix.os }}
+    needs: verify
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: package-linux
+            artifact: linux-installer
+          - os: macos-latest
+            target: package-macos-intel
+            artifact: macos-intel-installer
+          - os: macos-latest
+            target: package-macos-arm
+            artifact: macos-arm-installer
+          - os: windows-latest
+            target: package-windows
+            artifact: windows-installer
+
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: dtolnay/rust-toolchain@stable
+        
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Install cargo-packager
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-packager
+
+      - name: Setup Linux Dependencies
+        if: matrix.os == 'ubuntu-latest'
+        run: make setup-linux
+
+      - name: Package Desktop App via Makefile
+        shell: bash
+        run: make ${{ matrix.target }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-${{ matrix.artifact }}
+          path: dist/*
+          retention-days: 1
+
+  release:
+    name: Create GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - name: Create checksums
+        working-directory: artifacts
+        run: sha256sum * > SHA256SUMS.txt
+
+      - name: Publish Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            artifacts/*
+          # 自动生成包含自上次 Tag 以来所有 Commits/PRs 的 Release Notes！
+          generate_release_notes: true
