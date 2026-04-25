@@ -1,0 +1,23 @@
+# Rust
+target/
+Cargo.lock
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env / secrets
+.env
+.env.*
+*.secret
+
+# Logs
+*.log
+
+# Dist / build output
+dist/
