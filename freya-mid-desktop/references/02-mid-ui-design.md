@@ -147,39 +147,47 @@
 
 ### 5.3 Settings Page（设置页）
 
+同类设置项必须用一个 **Card 容器**包裹，section 标题放在 card 内部顶端，行之间用 `border_subtle` 分隔线隔开。禁止将每行单独做成独立 card 堆叠。
+
 ```text
 +----------------------------------------------+
-| APPEARANCE                                   | ← 11px BOLD 全大写, text_muted, margin_bottom=8
-|  +------------------------------------------+|
-|  | Theme        [🌙Dark][☀️Light][🖥️Auto]  || ← 行高=44, padding=12 上下
-|  |------------------------------------------|
-|  | Accent Color               [●] [●] [●]  ||
-|  +------------------------------------------+|
-| SYSTEM                                       |
-|  +------------------------------------------+|
-|  | VERSION: 0.1.0                           ||
-|  | TOTAL DROPPED FILES: 0                   ||
-|  +------------------------------------------+|
+| +------------------------------------------+ |
+| | APPEARANCE                               | | ← 11px BOLD 全大写, text_muted
+| |──────────────────────────────────────────| | ← border_subtle 分隔线
+| | Theme              [🌙Dark][☀Light][🖥Auto] | | ← 行高=48
+| |──────────────────────────────────────────| |
+| | Accent Color                    [swatch] | | ← 行高=48
+| +------------------------------------------+ |
+|                                              |
+| +------------------------------------------+ |
+| | SYSTEM                                   | |
+| |──────────────────────────────────────────| |
+| | Version                          0.1.0   | | ← 行高=44
+| |──────────────────────────────────────────| |
+| | Dropped Files                        0   | | ← 行高=44
+| +------------------------------------------+ |
 +----------------------------------------------+
 ```
 
-| 属性                | 值                         |
-|---------------------|----------------------------|
-| 分组标题字号        | `11.0 BOLD` 全大写         |
-| 分组标题颜色        | `text_muted`               |
-| 分组标题下边距      | `8.0`                      |
-| 行容器高度          | `44.0px`                   |
-| 行容器背景          | `bg_card`                  |
-| 行容器圆角          | `RADIUS_CARD`              |
-| 行容器 padding      | `Gaps::new_symmetric(0, 12.0)` |
-| 行之间间距          | `1.0`（border_subtle）     |
-| Theme chip 圆角     | `99.0`（胶囊形）           |
-| Theme chip padding  | `Gaps::new_symmetric(4, 10)` |
-| Active chip 背景    | `with_alpha(accent, 220)`  |
-| Active chip 文字    | `(255, 255, 255)`          |
-| Inactive chip 背景  | 透明                       |
-| Inactive chip 文字  | `text_muted`               |
-| Accent 圆点直径     | `16px`, `corner_radius=8`  |
+| 属性                | 值                                         |
+|---------------------|--------------------------------------------|
+| Card 背景           | `bg_card`                                  |
+| Card 边框           | `1px`, `border`                            |
+| Card 圆角           | `RADIUS_CARD`                              |
+| Card 方向           | `Direction::Vertical`                      |
+| Section header padding | `Gaps::new(12.0, 16.0, 8.0, 16.0)`     |
+| Section label 字号  | `11.0 BOLD` 全大写，`text_muted`           |
+| 行间分隔线          | `height=1px`，`background=border_subtle`   |
+| 行高（带控件）      | `48px`                                     |
+| 行高（纯信息）      | `44px`                                     |
+| 行 padding          | `Gaps::new_symmetric(0.0, 16.0)`（仅水平）  |
+| 行布局              | `Horizontal` + `SpaceBetween` + `cross_align=Center` |
+| Card 间距           | `spacing=12px`（外层 Vertical rect）       |
+| Theme chip 圆角     | `6.0`                                      |
+| Theme chip padding  | `Gaps::new_symmetric(5.0, 8.0)`            |
+| Active chip 背景    | `with_alpha(accent, 35)` + border `with_alpha(accent, 200)` |
+| Inactive chip 背景  | `(255, 255, 255, 10)`                      |
+| Accent 色块尺寸     | `40×24px`, `corner_radius=RADIUS_CTRL`     |
 
 ### 5.4 About Page（关于页）
 

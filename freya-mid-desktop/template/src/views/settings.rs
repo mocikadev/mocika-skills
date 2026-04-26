@@ -5,7 +5,9 @@ use freya::prelude::*;
 use crate::app::AppState;
 use crate::components::color_picker_panel::ColorPickerPanel;
 use crate::core::update::UpdateInfo;
-use crate::theme::{theme_tokens, with_alpha, ThemeMode, ThemeTokens, DANGER_RED, RADIUS_CARD};
+use crate::theme::{
+    theme_tokens, with_alpha, ThemeMode, ThemeTokens, DANGER_RED, RADIUS_CARD, RADIUS_CTRL,
+};
 
 #[derive(PartialEq)]
 pub struct SettingsView;
@@ -37,7 +39,8 @@ impl Component for SettingsView {
             .width(Size::fill())
             .height(Size::fill())
             .child(
-                ScrollView::new()                    .width(Size::fill())
+                ScrollView::new()
+                    .width(Size::fill())
                     .height(Size::fill())
                     .child(
                         rect()
@@ -50,6 +53,7 @@ impl Component for SettingsView {
                                     .padding(Gaps::new_all(24.0))
                                     .direction(Direction::Vertical)
                                     .spacing(12.0)
+                                    // ── Page title ───────────────────────────────
                                     .child(
                                         label()
                                             .font_size(16.0)
@@ -57,200 +61,324 @@ impl Component for SettingsView {
                                             .color(tokens.text_primary)
                                             .text("Settings"),
                                     )
-                                    .child(
-                                        label()
-                                            .margin(Gaps::new(4.0, 0.0, 0.0, 0.0))
-                                            .font_size(11.0)
-                                            .font_weight(FontWeight::BOLD)
-                                            .color(tokens.text_muted)
-                                            .text("APPEARANCE"),
-                                    )
+                                    // ── APPEARANCE card ──────────────────────────
                                     .child(
                                         rect()
                                             .width(Size::fill())
-                                            .padding(Gaps::new_symmetric(12.0, 14.0))
-                                            .background(tokens.bg_card)
-                                            .border(Border::new().width(1.0).fill(tokens.border))
-                                            .corner_radius(RADIUS_CARD)
-                                            .direction(Direction::Horizontal)
-                                            .main_align(Alignment::SpaceBetween)
-                                            .cross_align(Alignment::Center)
-                                            .child(
-                                                label()
-                                                    .font_size(13.0)
-                                                    .color(tokens.text_primary)
-                                                    .text("Theme"),
-                                            )
-                                            .child(
-                                                rect()
-                                                    .direction(Direction::Horizontal)
-                                                    .spacing(6.0)
-                                                    .cross_align(Alignment::Center)
-                                                    .child(
-                                                        Ripple::new()
-                                                            .color(with_alpha(accent, 60))
-                                                            .child(theme_chip(
-                                                                svg(icons::lucide::moon()),
-                                                                "Dark",
-                                                                theme_mode == ThemeMode::Dark,
-                                                                tokens,
-                                                                accent,
-                                                                hover_dark,
-                                                                move |_| {
-                                                                    app_state.write().theme_mode =
-                                                                        ThemeMode::Dark;
-                                                                },
-                                                            )),
-                                                    )
-                                                    .child(
-                                                        Ripple::new()
-                                                            .color(with_alpha(accent, 60))
-                                                            .child(theme_chip(
-                                                                svg(icons::lucide::sun()),
-                                                                "Light",
-                                                                theme_mode == ThemeMode::Light,
-                                                                tokens,
-                                                                accent,
-                                                                hover_light,
-                                                                move |_| {
-                                                                    app_state.write().theme_mode =
-                                                                        ThemeMode::Light;
-                                                                },
-                                                            )),
-                                                    )
-                                                    .child(
-                                                        Ripple::new()
-                                                            .color(with_alpha(accent, 60))
-                                                            .child(theme_chip(
-                                                                svg(icons::lucide::monitor()),
-                                                                "Auto",
-                                                                theme_mode == ThemeMode::Auto,
-                                                                tokens,
-                                                                accent,
-                                                                hover_auto,
-                                                                move |_| {
-                                                                    app_state.write().theme_mode =
-                                                                        ThemeMode::Auto;
-                                                                },
-                                                            )),
-                                                    ),
-                                            ),
-                                    )
-                                    .child(
-                                        rect()
-                                            .width(Size::fill())
-                                            .padding(Gaps::new_symmetric(12.0, 14.0))
-                                            .background(tokens.bg_card)
-                                            .border(Border::new().width(1.0).fill(tokens.border))
-                                            .corner_radius(RADIUS_CARD)
-                                            .direction(Direction::Horizontal)
-                                            .main_align(Alignment::SpaceBetween)
-                                            .cross_align(Alignment::Center)
-                                            .child(
-                                                label()
-                                                    .font_size(13.0)
-                                                    .color(tokens.text_primary)
-                                                    .text("Accent Color"),
-                                            )
-                                            .child(
-                                                rect()
-                                                    .width(Size::px(40.0))
-                                                    .height(Size::px(24.0))
-                                                    .corner_radius(4.0)
-                                                    .background(accent)
-                                                    .border(Border::new().width(1.0).fill(tokens.border))
-                                                    .on_press(move |_| {
-                                                        show_color_popup.toggle();
-                                                    })
-                                                    .on_pointer_enter(move |_| {
-                                                        Cursor::set(CursorIcon::Pointer);
-                                                    })
-                                                    .on_pointer_leave(move |_| {
-                                                        Cursor::set(CursorIcon::Default);
-                                                    }),
-                                            ),
-                                    )
-                                    .child(
-                                        label()
-                                            .margin(Gaps::new(8.0, 0.0, 0.0, 0.0))
-                                            .font_size(11.0)
-                                            .font_weight(FontWeight::BOLD)
-                                            .color(tokens.text_muted)
-                                            .text("SYSTEM"),
-                                    )
-                                    .child(
-                                        rect()
-                                            .padding(Gaps::new_all(12.0))
                                             .background(tokens.bg_card)
                                             .border(Border::new().width(1.0).fill(tokens.border))
                                             .corner_radius(RADIUS_CARD)
                                             .direction(Direction::Vertical)
-                                            .spacing(8.0)
+                                            // Section header
                                             .child(
-                                                label()
-                                                    .font_size(11.0)
-                                                    .color(tokens.text_muted)
-                                                    .text(format!(
-                                                        "VERSION: {}",
-                                                        env!("CARGO_PKG_VERSION")
-                                                    )),
+                                                rect()
+                                                    .width(Size::fill())
+                                                    .padding(Gaps::new(12.0, 16.0, 8.0, 16.0))
+                                                    .child(
+                                                        label()
+                                                            .font_size(11.0)
+                                                            .font_weight(FontWeight::BOLD)
+                                                            .color(tokens.text_muted)
+                                                            .text("APPEARANCE"),
+                                                    ),
                                             )
+                                            .child(row_divider(tokens))
                                             .child(
-                                                label()
-                                                    .font_size(11.0)
-                                                    .color(tokens.text_muted)
-                                                    .text(format!(
-                                                        "TOTAL DROPPED FILES: {}",
-                                                        app_state.read().dropped_files.len()
-                                                    )),
-                                            )
-                                            .maybe_child(
-                                                if let Some(info) = update_info.read().as_ref() {
-                                                    let is_hover_update = *hover_update.read();
-                                                    Some(
+                                                rect()
+                                                    .width(Size::fill())
+                                                    .height(Size::px(48.0))
+                                                    .padding(Gaps::new_symmetric(0.0, 16.0))
+                                                    .direction(Direction::Horizontal)
+                                                    .main_align(Alignment::SpaceBetween)
+                                                    .cross_align(Alignment::Center)
+                                                    .child(
+                                                        label()
+                                                            .font_size(13.0)
+                                                            .color(tokens.text_primary)
+                                                            .text("Theme"),
+                                                    )
+                                                    .child(
                                                         rect()
-                                                            .direction(Direction::Vertical)
-                                                            .spacing(8.0)
+                                                            .direction(Direction::Horizontal)
+                                                            .spacing(6.0)
+                                                            .cross_align(Alignment::Center)
                                                             .child(
-                                                                label()
-                                                                    .font_size(13.0)
-                                                                    .color(DANGER_RED)
-                                                                    .text(format!(
-                                                                        "New Version Available: v{}",
-                                                                        info.latest_version
-                                                                            .clone()
-                                                                            .unwrap_or_default()
+                                                                Ripple::new()
+                                                                    .color(with_alpha(accent, 60))
+                                                                    .child(theme_chip(
+                                                                        svg(icons::lucide::moon()),
+                                                                        "Dark",
+                                                                        theme_mode == ThemeMode::Dark,
+                                                                        tokens,
+                                                                        accent,
+                                                                        hover_dark,
+                                                                        move |_| {
+                                                                            app_state.write().theme_mode =
+                                                                                ThemeMode::Dark;
+                                                                        },
                                                                     )),
                                                             )
                                                             .child(
                                                                 Ripple::new()
-                                                                    .color((255u8, 255u8, 255u8, 80u8))
+                                                                    .color(with_alpha(accent, 60))
+                                                                    .child(theme_chip(
+                                                                        svg(icons::lucide::sun()),
+                                                                        "Light",
+                                                                        theme_mode == ThemeMode::Light,
+                                                                        tokens,
+                                                                        accent,
+                                                                        hover_light,
+                                                                        move |_| {
+                                                                            app_state.write().theme_mode =
+                                                                                ThemeMode::Light;
+                                                                        },
+                                                                    )),
+                                                            )
+                                                            .child(
+                                                                Ripple::new()
+                                                                    .color(with_alpha(accent, 60))
+                                                                    .child(theme_chip(
+                                                                        svg(icons::lucide::monitor()),
+                                                                        "Auto",
+                                                                        theme_mode == ThemeMode::Auto,
+                                                                        tokens,
+                                                                        accent,
+                                                                        hover_auto,
+                                                                        move |_| {
+                                                                            app_state.write().theme_mode =
+                                                                                ThemeMode::Auto;
+                                                                        },
+                                                                    )),
+                                                            ),
+                                                    ),
+                                            )
+                                            .child(row_divider(tokens))
+                                            .child(
+                                                rect()
+                                                    .width(Size::fill())
+                                                    .height(Size::px(48.0))
+                                                    .padding(Gaps::new_symmetric(0.0, 16.0))
+                                                    .direction(Direction::Horizontal)
+                                                    .main_align(Alignment::SpaceBetween)
+                                                    .cross_align(Alignment::Center)
+                                                    .child(
+                                                        label()
+                                                            .font_size(13.0)
+                                                            .color(tokens.text_primary)
+                                                            .text("Accent Color"),
+                                                    )
+                                                    .child(
+                                                        rect()
+                                                            .width(Size::px(40.0))
+                                                            .height(Size::px(24.0))
+                                                            .corner_radius(RADIUS_CTRL)
+                                                            .background(accent)
+                                                            .border(
+                                                                Border::new()
+                                                                    .width(1.0)
+                                                                    .fill(tokens.border),
+                                                            )
+                                                            .on_press(move |_| {
+                                                                show_color_popup.toggle();
+                                                            })
+                                                            .on_pointer_enter(move |_| {
+                                                                Cursor::set(CursorIcon::Pointer);
+                                                            })
+                                                            .on_pointer_leave(move |_| {
+                                                                Cursor::set(CursorIcon::Default);
+                                                            }),
+                                                    ),
+                                            ),
+                                    )
+                                    // ── SYSTEM card ──────────────────────────────
+                                    .child(
+                                        rect()
+                                            .width(Size::fill())
+                                            .background(tokens.bg_card)
+                                            .border(Border::new().width(1.0).fill(tokens.border))
+                                            .corner_radius(RADIUS_CARD)
+                                            .direction(Direction::Vertical)
+                                            // Section header
+                                            .child(
+                                                rect()
+                                                    .width(Size::fill())
+                                                    .padding(Gaps::new(12.0, 16.0, 8.0, 16.0))
+                                                    .child(
+                                                        label()
+                                                            .font_size(11.0)
+                                                            .font_weight(FontWeight::BOLD)
+                                                            .color(tokens.text_muted)
+                                                            .text("SYSTEM"),
+                                                    ),
+                                            )
+                                             .child(row_divider(tokens))
+                                             .child(
+                                                 rect()
+                                                     .width(Size::fill())
+                                                     .height(Size::px(44.0))
+                                                     .padding(Gaps::new_symmetric(0.0, 16.0))
+                                                     .direction(Direction::Horizontal)
+                                                     .main_align(Alignment::SpaceBetween)
+                                                     .cross_align(Alignment::Center)
+                                                     .child(
+                                                         label()
+                                                             .font_size(13.0)
+                                                             .color(tokens.text_primary)
+                                                             .text("Version"),
+                                                     )
+                                                     .child(
+                                                         label()
+                                                             .font_size(12.0)
+                                                             .color(tokens.text_muted)
+                                                             .text(env!("CARGO_PKG_VERSION")),
+                                                     ),
+                                             )
+                                             .child(row_divider(tokens))
+                                             .child(
+                                                rect()
+                                                    .width(Size::fill())
+                                                    .height(Size::px(44.0))
+                                                    .padding(Gaps::new_symmetric(0.0, 16.0))
+                                                    .direction(Direction::Horizontal)
+                                                    .main_align(Alignment::SpaceBetween)
+                                                    .cross_align(Alignment::Center)
+                                                    .child(
+                                                        label()
+                                                            .font_size(13.0)
+                                                            .color(tokens.text_primary)
+                                                            .text("Dropped Files"),
+                                                    )
+                                                    .child(
+                                                        label()
+                                                            .font_size(12.0)
+                                                            .color(tokens.text_muted)
+                                                            .text(format!(
+                                                                "{}",
+                                                                app_state.read().dropped_files.len()
+                                                            )),
+                                                    ),
+                                            )
+                                             .maybe_child(
+                                                if let Some(info) = update_info.read().as_ref() {
+                                                    let is_hover = *hover_update.read();
+                                                    Some(
+                                                        rect()
+                                                            .direction(Direction::Vertical)
+                                                            .child(row_divider(tokens))
+                                                            .child(
+                                                                rect()
+                                                                    .width(Size::fill())
+                                                                    .padding(
+                                                                        Gaps::new_symmetric(
+                                                                            12.0, 16.0,
+                                                                        ),
+                                                                    )
+                                                                    .direction(Direction::Horizontal)
+                                                                    .main_align(
+                                                                        Alignment::SpaceBetween,
+                                                                    )
+                                                                    .cross_align(Alignment::Center)
                                                                     .child(
-                                                                        rect()
-                                                                            .width(Size::px(160.0))
-                                                                            .padding(Gaps::new_symmetric(8.0, 12.0))
-                                                                            .background(if is_hover_update {
-                                                                                with_alpha(accent, 255)
-                                                                            } else {
-                                                                                with_alpha(accent, 40)
-                                                                            })
-                                                                            .border(Border::new().width(1.0).fill(with_alpha(accent, 255)))
-                                                                            .corner_radius(6.0)
-                                                                            .on_press(on_download)
-                                                                            .on_pointer_enter(move |_| {
-                                                                                hover_update.set(true);
-                                                                                Cursor::set(CursorIcon::Pointer);
-                                                                            })
-                                                                            .on_pointer_leave(move |_| {
-                                                                                hover_update.set(false);
-                                                                                Cursor::set(CursorIcon::Default);
-                                                                            })
+                                                                        label()
+                                                                            .font_size(13.0)
+                                                                            .color(DANGER_RED)
+                                                                            .text(format!(
+                                                                                "New: v{}",
+                                                                                info.latest_version
+                                                                                    .clone()
+                                                                                    .unwrap_or_default()
+                                                                            )),
+                                                                    )
+                                                                    .child(
+                                                                        Ripple::new()
+                                                                            .color((
+                                                                                255u8, 255u8, 255u8,
+                                                                                80u8,
+                                                                            ))
                                                                             .child(
-                                                                                label()
-                                                                                    .font_size(11.0)
-                                                                                    .font_weight(FontWeight::BOLD)
-                                                                                    .color(tokens.text_primary)
-                                                                                    .text("CHECK UPDATE"),
+                                                                                rect()
+                                                                                    .padding(
+                                                                                        Gaps::new_symmetric(
+                                                                                            6.0,
+                                                                                            12.0,
+                                                                                        ),
+                                                                                    )
+                                                                                    .background(
+                                                                                        if is_hover {
+                                                                                            with_alpha(
+                                                                                                accent,
+                                                                                                255,
+                                                                                            )
+                                                                                        } else {
+                                                                                            with_alpha(
+                                                                                                accent,
+                                                                                                40,
+                                                                                            )
+                                                                                        },
+                                                                                    )
+                                                                                    .border(
+                                                                                        Border::new()
+                                                                                            .width(1.0)
+                                                                                            .fill(
+                                                                                                with_alpha(
+                                                                                                    accent,
+                                                                                                    255,
+                                                                                                ),
+                                                                                            ),
+                                                                                    )
+                                                                                    .corner_radius(
+                                                                                        RADIUS_CTRL,
+                                                                                    )
+                                                                                    .on_press(
+                                                                                        on_download,
+                                                                                    )
+                                                                                    .on_pointer_enter(
+                                                                                        move |_| {
+                                                                                            hover_update
+                                                                                                .set(
+                                                                                                    true,
+                                                                                                );
+                                                                                            Cursor::set(
+                                                                                                CursorIcon::Pointer,
+                                                                                            );
+                                                                                        },
+                                                                                    )
+                                                                                    .on_pointer_leave(
+                                                                                        move |_| {
+                                                                                            hover_update
+                                                                                                .set(
+                                                                                                    false,
+                                                                                                );
+                                                                                            Cursor::set(
+                                                                                                CursorIcon::Default,
+                                                                                            );
+                                                                                        },
+                                                                                    )
+                                                                                    .child(
+                                                                                        label()
+                                                                                            .font_size(
+                                                                                                11.0,
+                                                                                            )
+                                                                                            .font_weight(
+                                                                                                FontWeight::BOLD,
+                                                                                            )
+                                                                                            .color(
+                                                                                                if is_hover {
+                                                                                                    with_alpha(
+                                                                                                        (255, 255, 255),
+                                                                                                        255,
+                                                                                                    )
+                                                                                                } else {
+                                                                                                    with_alpha(
+                                                                                                        accent,
+                                                                                                        255,
+                                                                                                    )
+                                                                                                },
+                                                                                            )
+                                                                                            .text(
+                                                                                                "DOWNLOAD",
+                                                                                            ),
+                                                                                    ),
                                                                             ),
                                                                     ),
                                                             ),
@@ -277,6 +405,16 @@ impl Component for SettingsView {
                     ),
             )
     }
+}
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+
+/// 分组 card 内行间分隔线（1px，border_subtle）
+fn row_divider(tokens: ThemeTokens) -> impl IntoElement {
+    rect()
+        .width(Size::fill())
+        .height(Size::px(1.0))
+        .background(tokens.border_subtle)
 }
 
 fn theme_chip(
@@ -329,7 +467,11 @@ fn theme_chip(
         .child(
             label()
                 .font_size(10.0)
-                .font_weight(if active { FontWeight::BOLD } else { FontWeight::NORMAL })
+                .font_weight(if active {
+                    FontWeight::BOLD
+                } else {
+                    FontWeight::NORMAL
+                })
                 .color(if active {
                     with_alpha(accent, 255)
                 } else {
