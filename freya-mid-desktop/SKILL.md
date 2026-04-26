@@ -46,7 +46,7 @@ description: (MUST USE) Industrial-grade Desktop App Scaffold (Rust + Freya + MI
    - Typography 体系（7 档字号，哪个角色用哪档）
    - Spacing 体系（4pt grid，合法值列表）
    - 每个组件的精确规格（Activity Bar 尺寸、Nav item 高度、Drop Zone 三态）
-   - Do / Don't 规则（禁止裸色值、禁止非 4pt 间距、禁止 About 垂直居中等）
+   - Do / Don't 规则（禁止裸色值、禁止非 4pt 间距、禁止页面布局层绝对定位等）
 2. 扮演资深 UI 设计师。根据业务需求，使用 ASCII 字符画绘制出 `Main Stage` 的界面布局（输入框在哪、列表在哪）。
 3. 明确各个组件对应的 Design Tokens（从 `02-mid-ui-design.md` 精确引用，不得自行发明数值）。
 4. 生成 `docs/ui-design.md`。
@@ -71,7 +71,7 @@ description: (MUST USE) Industrial-grade Desktop App Scaffold (Rust + Freya + MI
    - `Theme` 必须是真实切换（Dark/Light/Auto）并驱动全局 token，不允许仅文字占位。
    - `Accent Color` 必须可见生效（至少作用于 active 指示器、主按钮、Drop Zone hover）。
    - `Activity Bar` 必须采用“顶部 Home、底部 Settings/About”分区，未激活图标默认透明背景，激活态使用指示器。
-   - `About` 必须完整实现：Logo(64x64) + Version(Beta) + Check Update + 三链接区。
+    - `About` 必须完整实现：Logo(56x56) + Version(Beta) + Check Update + 三链接区，居中布局。
    - `Drop Zone` 必须实现 Idle/Hover/Active 三态，不允许单态静态框。
 5. 严格遵守 `03-architecture.md` 中的多线程和异步隔离规则。
 

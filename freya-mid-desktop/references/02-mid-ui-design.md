@@ -208,8 +208,8 @@ Licensed under MIT OR Apache-2.0  ← 11px text_muted，margin_top=32
 +------------------------------------------+
 |                  [↑]                     | ← idle: 220px 高，border=1px text_muted@60%
 |           Drag files here                | ← hover: border=1.5px accent, bg=accent@10%
-|                                          |         文字变为 "Drop to process" accent色
-+------------------------------------------+  active: 120px 高（收缩）
+|        or click to browse                |         文字变为 "Drop to process" accent色
++------------------------------------------+  active: 120px 高（收缩）"Drop more files"
 ```
 
 | 状态   | 高度    | 边框宽 | 边框色                        | 背景              |
@@ -218,12 +218,50 @@ Licensed under MIT OR Apache-2.0  ← 11px text_muted，margin_top=32
 | Hover  | `220px` | `1.5`  | `with_alpha(accent, 255)`     | `with_alpha(accent, 25)` |
 | Active | `120px` | `1.0`  | `border`                      | `bg_card`         |
 
+**Idle 状态文本层级**：
+- 主文本 `"Drag files here"`：13px NORMAL，`text_muted`
+- 副文本 `"or click to browse"`：11px，`with_alpha(text_muted, 150)`，仅在 Idle 态显示
+
+**点击行为（Click-to-browse）**：
+绑定 `on_press`，触发 `rfd::AsyncFileDialog::new().pick_files().await`，将用户选中的文件路径写入 `AppState.dropped_files`。此行为是对 Freya 拖拽事件时序 bug 的降级 fallback，必须实现。
+
+**鼠标样式**：`on_pointer_enter` 设 `CursorIcon::Pointer`，`on_pointer_leave` 恢复 `CursorIcon::Default`。
+
 ### 5.6 状态胶囊（Status Tag）
 
 ```text
 [ PROCESSING ]  ← 11px BOLD 全大写，border-radius=99，padding=(4, 12)
                     bg=accent@10%，text=accent
 ```
+
+### 5.7 ColorPickerPanel（颜色拾取面板）
+
+内嵌 HSV 拾色器，作为 Settings 页 Accent Color 行的弹出内容。**无 swatch 包装层**，直接在 `Popup` 中渲染，单步触达，避免"套娃"问题。
+
+```text
++-----------------------------+
+| [  SV 渐变面板 (240×160)  ] | ← Saturation-Value 渐变矩形
+|  白→透明 叠 黑→透明 叠底色  |   RGBA 绝对定位叠层
++-----------------------------+
+| [      色相条 (240×16)     ] | ← Hue 彩虹渐变条
++-----------------------------+
+| Hex: #5E6AD2               | ← 12px Mono，text_secondary
++-----------------------------+
+```
+
+| 属性            | 值                    |
+|-----------------|-----------------------|
+| SV 面板宽       | `240px`               |
+| SV 面板高       | `160px`               |
+| 色相条高        | `16px`                |
+| 面板圆角        | `RADIUS_CARD`         |
+| 内部 padding    | `12px`                |
+| 元素间距        | `8px`                 |
+| 背景            | `bg_card`             |
+
+**布局注意**：SV 面板内的渐变叠层使用 `Position::new_absolute()` 实现三层叠加（底色 / 白色 S 渐变 / 黑色 V 渐变），这是 widget 内部实现，不违反页面布局层禁止绝对定位的规则。
+
+**触发方式**：Settings 页 Accent Color 行右侧放置 40×24 色块（`corner_radius=RADIUS_CTRL`），点击色块弹出 `Popup`，`Popup` 内嵌 `ColorPickerPanel`，`Popup.show` 默认传 `false` 不自动展开。
 
 ---
 
@@ -255,7 +293,7 @@ Freya 无内置 shadow，用背景色区分层级：
 - 禁止使用非 4pt 间距（5, 7, 10, 15 等）
 - 禁止在 Activity Bar 底部底部 nav 项目之间使用 `SpaceBetween` 以外的方式分隔主次导航
 - 禁止用 `ImageViewer` 渲染 SVG（应使用 `svg(include_bytes!(...))`）
-- 禁止在 Activity Bar 以外的地方使用绝对定位（`Position::new_absolute()`）
+- 禁止在 Activity Bar 以外的地方使用绝对定位（`Position::new_absolute()`）作为**页面布局手段**；widget 内部叠层（如 `ColorPickerPanel` 的 SV 渐变叠层）除外
 
 ---
 
@@ -265,5 +303,7 @@ Freya 无内置 shadow，用背景色区分层级：
 - Alpha 混合：`with_alpha(tokens.bg_card, 220)` 而非手动构造四元组
 - 所有路由视图必须实现 `impl Component for XxxView { fn render(...) }`，禁止 `#[component]` 宏
 - `use_state` / `use_consume` 只能在 `render()` 方法体顶层调用，不得在条件分支或嵌套函数中调用
-- 文件拖拽事件：`on_global_file_hover` / `on_global_file_hover_cancelled` / `on_file_drop`（`FileDrop` 在下次 `CursorMoved` 时触发，行为正常）
+- 文件拖拽事件：`on_global_file_hover` / `on_global_file_hover_cancelled` / `on_file_drop`
+  - ⚠️ **已知 Freya Bug**：`on_global_file_hover_cancelled` 在**文件成功 drop 后不会触发**，只在拖拽取消（Escape/移出窗口）时触发。因此必须在 `on_file_drop` handler 中手动将 `is_file_hovering` 重置为 `false`，否则 DropZone 会永远停在 Hover 态。
+  - `FileDrop` 事件（`on_file_drop`）在下次 `CursorMoved` 时才分发（winit 底层行为），属正常，不影响功能。
 - 多个 closure 共享 state：`State<T>` 实现了 `Copy`，直接在各 closure 中分别捕获即可

@@ -14,11 +14,23 @@ project_root/
 ├── docs/                # 需求(requirements.md)、设计(ui-design.md, design.md)
 ├── src/
 │   ├── components/      # UI 纯展示组件 (遵守 MID-UI)
+│   │   ├── activity_bar.rs
+│   │   ├── color_picker_panel.rs  # 内嵌 HSV 渐变拾色器，无 swatch 包装层
+│   │   ├── drop_zone.rs
+│   │   └── mod.rs
 │   ├── core/            # 纯 Rust 业务逻辑，与 Freya 无关 (纯异步)
-│   ├── utils/           # 系统底层操作 (如配置读取、系统调用)
+│   │   ├── update.rs    # GitHub Release 更新检测
+│   │   └── mod.rs
 │   ├── views/           # 页面级路由组件 (Home, Settings, About)
-│   ├── theme.rs         # MID-UI 规范的色板枚举定义
-│   └── main.rs          # 程序的生命周期、路由分发与全局 Context
+│   │   ├── home.rs
+│   │   ├── settings.rs
+│   │   ├── about.rs
+│   │   └── mod.rs
+│   ├── app.rs           # 路由定义、AppState、AppLayout（Context 注入）
+│   ├── theme.rs         # MID-UI 规范的色板枚举与 ThemeTokens 定义
+│   └── main.rs          # 程序入口，调用 launch(app)
+├── assets/
+│   └── logo.svg         # 纯 stroke path，无 mask/filter
 ├── AGENTS.md            # 【重要】本项目专属的 AI 代理开发宪法
 ├── README.md            # 面向全球的开源介绍
 └── Cargo.toml           # 依赖清单
@@ -90,20 +102,28 @@ fn HomeView() -> Element { ... }
 **绝对不允许在主线程中执行任何耗时阻塞操作。**
 任何耗时超过 16ms 的计算或 I/O（如网络请求、大文件读写、解密压缩），必须遵循以下异步架构：
 
-使用 `tokio::spawn` 将任务扔到后台。同时使用全局共享的 `Signal` (通过 Context 获取)，在后台跨线程修改前端状态。
+使用 Freya 内置的 `spawn` 将任务扔到后台。通过 `use_consume::<State<AppState>>()` 获取全局状态，在 closure 中直接调用 `.write()` 更新。
 
 ```rust
 // 示例规范：异步执行并安全跨线程更新全局状态
-let mut global_store = use_context::<Signal<GlobalTaskStore>>();
+// ✅ 正确：使用 Freya 的 spawn（不是 tokio::spawn），以及 State<T> API
+let mut app_state = use_consume::<State<AppState>>();
 
-let on_drop = move |files| {
-    let mut store_signal = global_store.clone();
-    tokio::spawn(async move {
-        store_signal.write().set_status(Status::Processing);
-        let data = core::processor::heavy_process(files).await; // 耗时逻辑
-        store_signal.write().update_results(data);
+let on_pick = move |_| {
+    spawn(async move {
+        if let Some(files) = rfd::AsyncFileDialog::new().pick_files().await {
+            for f in files {
+                app_state.write().dropped_files.push(
+                    f.path().to_string_lossy().to_string()
+                );
+            }
+        }
     });
 };
+
+// ❌ 错误：不要使用 tokio::spawn（无法跨线程安全写入 State<T>）
+// let mut store = use_context::<Signal<GlobalTaskStore>>();  // ← 旧 API，已废弃
+// tokio::spawn(async move { store.write().update(); });      // ← 错误用法
 ```
 
 ---
@@ -113,6 +133,7 @@ let on_drop = move |files| {
 脚手架追求极致轻量。除 `freya` 外，其他系统级功能必须**按需引入 (Opt-in)**：
 *   **配置保存**: `directories`, `serde`, `serde_json/toml`.
 *   **更新检查/网络**: `tokio` (full), `reqwest`, `open`.
+*   **文件对话框**: `rfd`（提供跨平台原生文件选择器，解决 Freya 拖拽事件时序 bug 的 click-to-browse 降级方案）.
 *   **系统托盘**: `tray-icon`.
 
 ---
