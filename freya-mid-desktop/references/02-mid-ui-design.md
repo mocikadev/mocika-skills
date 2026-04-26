@@ -180,9 +180,10 @@
 | 行布局              | `Horizontal` + `SpaceBetween` + `cross_align=Center` |
 | Card 间距           | `spacing=12px`（外层 Vertical rect）       |
 | Theme chip 圆角     | `6.0`                                      |
-| Theme chip padding  | `Gaps::new_symmetric(5.0, 8.0)`            |
+| Theme chip padding  | `Gaps::new_all(7.0)`（纯图标，均等方形）    |
 | Active chip 背景    | `with_alpha(accent, 35)` + border `with_alpha(accent, 200)` |
 | Inactive chip 背景  | `(255, 255, 255, 10)`                      |
+| Theme chip 图标尺寸 | `14×14px`，无文字 label（多语言无关）        |
 | Accent 色块尺寸     | `40×24px`, `corner_radius=RADIUS_CTRL`     |
 
 ### 5.4 About Page（关于页）

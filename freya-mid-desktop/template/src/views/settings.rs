@@ -104,10 +104,9 @@ impl Component for SettingsView {
                                                             .child(
                                                                 Ripple::new()
                                                                     .color(with_alpha(accent, 60))
-                                                                    .child(theme_chip(
-                                                                        svg(icons::lucide::moon()),
-                                                                        "Dark",
-                                                                        theme_mode == ThemeMode::Dark,
+                                                                     .child(theme_chip(
+                                                                         svg(icons::lucide::moon()),
+                                                                         theme_mode == ThemeMode::Dark,
                                                                         tokens,
                                                                         accent,
                                                                         hover_dark,
@@ -120,10 +119,9 @@ impl Component for SettingsView {
                                                             .child(
                                                                 Ripple::new()
                                                                     .color(with_alpha(accent, 60))
-                                                                    .child(theme_chip(
-                                                                        svg(icons::lucide::sun()),
-                                                                        "Light",
-                                                                        theme_mode == ThemeMode::Light,
+                                                                     .child(theme_chip(
+                                                                         svg(icons::lucide::sun()),
+                                                                         theme_mode == ThemeMode::Light,
                                                                         tokens,
                                                                         accent,
                                                                         hover_light,
@@ -136,10 +134,9 @@ impl Component for SettingsView {
                                                             .child(
                                                                 Ripple::new()
                                                                     .color(with_alpha(accent, 60))
-                                                                    .child(theme_chip(
-                                                                        svg(icons::lucide::monitor()),
-                                                                        "Auto",
-                                                                        theme_mode == ThemeMode::Auto,
+                                                                     .child(theme_chip(
+                                                                         svg(icons::lucide::monitor()),
+                                                                         theme_mode == ThemeMode::Auto,
                                                                         tokens,
                                                                         accent,
                                                                         hover_auto,
@@ -343,7 +340,6 @@ impl Component for SettingsView {
 
 fn theme_chip(
     icon: Svg,
-    chip_label: &'static str,
     active: bool,
     tokens: ThemeTokens,
     accent: (u8, u8, u8),
@@ -353,11 +349,10 @@ fn theme_chip(
     let is_hover = *hover.read();
 
     rect()
-        .padding(Gaps::new_symmetric(5.0, 8.0))
+        .padding(Gaps::new_all(7.0))
         .corner_radius(6.0)
-        .direction(Direction::Horizontal)
-        .spacing(4.0)
         .cross_align(Alignment::Center)
+        .main_align(Alignment::Center)
         .background(if active {
             with_alpha(accent, 35)
         } else if is_hover {
@@ -380,27 +375,12 @@ fn theme_chip(
             Cursor::set(CursorIcon::Default);
         })
         .child(
-            icon.width(Size::px(12.0))
-                .height(Size::px(12.0))
+            icon.width(Size::px(14.0))
+                .height(Size::px(14.0))
                 .color(if active {
                     with_alpha(accent, 255)
                 } else {
                     with_alpha(tokens.text_muted, 255)
                 }),
-        )
-        .child(
-            label()
-                .font_size(10.0)
-                .font_weight(if active {
-                    FontWeight::BOLD
-                } else {
-                    FontWeight::NORMAL
-                })
-                .color(if active {
-                    with_alpha(accent, 255)
-                } else {
-                    with_alpha(tokens.text_muted, 255)
-                })
-                .text(chip_label),
         )
 }
