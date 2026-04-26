@@ -16,7 +16,22 @@ description: (MUST USE) Industrial-grade Desktop App Scaffold (Rust + Freya + MI
 4. **README 文档标准与多语言规范**: `@path references/04-documentation.md`
 5. **项目开源双许可模板**: `@path assets/LICENSE-MIT`, `@path assets/LICENSE-APACHE`
 6. **CI/CD 发布脚本模板**: `@path assets/release.yml`
-7. **参考模板工程**: `@path template/` (包含标准入口、Activity Bar、Update 模块、状态提升示例；`template/src/theme.rs` 是 ThemeTokens 的权威实现)
+7. **参考模板工程（逐文件导航）**: `@path template/`
+   实现每个模块前，**必须先读对应模板文件**，禁止不看模板直接手写已有的模块。
+
+   | 你要实现的模块                                    | 实现前必须读的模板文件                                      |
+   |---------------------------------------------------|-------------------------------------------------------------|
+   | `Cargo.toml` 依赖与 features 配置                | `@path template/Cargo.toml`                                 |
+   | 路由定义、AppState、Context 注入、主题同步         | `@path template/src/app.rs`                                 |
+   | ThemeTokens / `with_alpha` / `RADIUS_*` 常量      | `@path template/src/theme.rs` ← **色彩系统权威实现**        |
+   | ActivityBar（Logo + 路由 nav + Ripple + 指示器）  | `@path template/src/components/activity_bar.rs`             |
+   | DropZone（三态 + rfd 点击降级 + 鼠标样式）        | `@path template/src/components/drop_zone.rs`                |
+   | ColorPickerPanel（HSV 渐变 + 色相条 + Hex 显示）  | `@path template/src/components/color_picker_panel.rs`       |
+   | Settings 页（SpaceBetween 行 + Popup + ThemeChip）| `@path template/src/views/settings.rs`                      |
+   | About 页（居中布局 + 三链接 + 更新按钮）          | `@path template/src/views/about.rs`                         |
+   | Home 页（DropZone 接入 + 文件列表展示）           | `@path template/src/views/home.rs`                          |
+   | 更新检测后台逻辑（GitHub API + 版本比对）          | `@path template/src/core/update.rs`                         |
+   | 程序入口                                          | `@path template/src/main.rs`                                |
 
 ---
 
@@ -66,7 +81,25 @@ description: (MUST USE) Industrial-grade Desktop App Scaffold (Rust + Freya + MI
 **行为**:
 1. 扮演全栈工程师。如果是新项目执行 `cargo new`。**如果是重构项目**：先大刀阔斧清理旧框架冗余代码（如 `src-tauri`、前端 `package.json`），再修改 `Cargo.toml` 引入 Freya 体系。
 2. 强烈建议调用系统内置的 `rust-skills` (内存/错误处理) 和 `freya` (UI 生命周期) 技能协助编码。
-3. **初始化骨架**: 必须参考或直接拷贝 `@path template/` 下的标准代码结构。先搭建外壳 (路由、主题 Context、Activity Bar 以及 Update Checker 后台任务)，验证通过后，再接入/编写 `core/` 业务逻辑，最后组装 Main Stage。
+3. **初始化骨架（严格按文件顺序，先读后写）**：
+   逐模块参考或拷贝 `template/src/` 下的对应文件。**实现每个模块前必须先用 `read` 工具读取对应模板文件，禁止跳过直接手写。** 施工顺序如下：
+
+   **第一轮：搭外壳，`cargo build` 验证通过后再继续**
+   1. 读 `template/Cargo.toml` → 复制依赖声明（freya features、rfd、reqwest 等），按实际业务增删，不得遗漏 `rfd`
+   2. 读 `template/src/main.rs` → 复制程序入口
+   3. 读 `template/src/app.rs` → 复制路由定义、`AppState`、`AppLayout`、全局 Context 注入、主题同步逻辑，按业务扩展 `AppState` 字段
+   4. 读 `template/src/theme.rs` → 直接拷贝 `ThemeTokens`，禁止修改 token 数值
+   5. 读 `template/src/components/activity_bar.rs` → 复制 ActivityBar 骨架
+   6. 读 `template/src/core/update.rs` → 按需复制更新检测模块（需求不含更新功能可跳过）
+   7. 执行 `cargo build`，确认 0 error，再进行第二轮
+
+   **第二轮：组装 Main Stage 与业务页面**
+   8. 读 `template/src/components/drop_zone.rs` → 复制 DropZone（三态 + rfd + 鼠标样式），接入 Home 页
+   9. 读 `template/src/components/color_picker_panel.rs` → 按需复制（需要 Accent Color 配置时）
+   10. 读 `template/src/views/settings.rs` → 复制 Settings 页框架（SpaceBetween 行 + Popup + ThemeChip）
+   11. 读 `template/src/views/about.rs` → 复制 About 页（居中布局），填入真实应用名/描述/链接
+   12. 读 `template/src/views/home.rs` → 了解 DropZone 接入方式后，**在此文件中实现核心业务 Main Stage**
+   13. 在 `src/core/` 下编写纯 Rust 业务逻辑，与 UI 完全解耦
 4. **实现强制验收项（新增）**:
    - `Theme` 必须是真实切换（Dark/Light/Auto）并驱动全局 token，不允许仅文字占位。
    - `Accent Color` 必须可见生效（至少作用于 active 指示器、主按钮、Drop Zone hover）。
