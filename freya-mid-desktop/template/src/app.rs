@@ -34,7 +34,7 @@ struct AppLayout;
 impl Component for AppLayout {
     fn render(&self) -> impl IntoElement {
         let mut update_info = use_state(|| None::<UpdateInfo>);
-        let mut app_state = use_state(|| AppState {
+        let app_state = use_state(|| AppState {
             dropped_files: Vec::new(),
             theme_mode: ThemeMode::Dark,
             accent_color: (94, 106, 210),
@@ -71,15 +71,6 @@ impl Component for AppLayout {
             .height(Size::fill())
             .direction(Direction::Horizontal)
             .background(tokens.bg_stage)
-            .on_file_drop(move |e: Event<FileEventData>| {
-                if let Some(path) = e.file_path.clone() {
-                    app_state
-                        .write()
-                        .dropped_files
-                        .push(path.to_string_lossy().to_string());
-                }
-                app_state.write().is_file_hovering = false;
-            })
             .child(ActivityBar {})
             .child(
                 rect()

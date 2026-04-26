@@ -76,6 +76,12 @@ impl Component for DropZone {
             .on_global_file_hover_cancelled(move |_| {
                 app_state.write().is_file_hovering = false;
             })
+            .on_file_drop(move |e: Event<FileEventData>| {
+                if let Some(path) = e.file_path.clone() {
+                    app_state.write().dropped_files.push(path.to_string_lossy().to_string());
+                }
+                app_state.write().is_file_hovering = false;
+            })
             .on_press(move |_| {
                 spawn(async move {
                     if let Some(files) = rfd::AsyncFileDialog::new().pick_files().await {
