@@ -82,7 +82,6 @@ impl Component for SettingsView {
                                                             .text("APPEARANCE"),
                                                     ),
                                             )
-                                            .child(row_divider(tokens))
                                             .child(
                                                 rect()
                                                     .width(Size::fill())
@@ -152,7 +151,6 @@ impl Component for SettingsView {
                                                             ),
                                                     ),
                                             )
-                                            .child(row_divider(tokens))
                                             .child(
                                                 rect()
                                                     .width(Size::fill())
@@ -211,7 +209,6 @@ impl Component for SettingsView {
                                                             .text("SYSTEM"),
                                                     ),
                                             )
-                                             .child(row_divider(tokens))
                                              .child(
                                                  rect()
                                                      .width(Size::fill())
@@ -233,7 +230,6 @@ impl Component for SettingsView {
                                                              .text(env!("CARGO_PKG_VERSION")),
                                                      ),
                                              )
-                                             .child(row_divider(tokens))
                                              .child(
                                                 rect()
                                                     .width(Size::fill())
@@ -263,122 +259,58 @@ impl Component for SettingsView {
                                                     let is_hover = *hover_update.read();
                                                     Some(
                                                         rect()
-                                                            .direction(Direction::Vertical)
-                                                            .child(row_divider(tokens))
+                                                            .width(Size::fill())
+                                                            .padding(Gaps::new_symmetric(12.0, 16.0))
+                                                            .direction(Direction::Horizontal)
+                                                            .main_align(Alignment::SpaceBetween)
+                                                            .cross_align(Alignment::Center)
                                                             .child(
-                                                                rect()
-                                                                    .width(Size::fill())
-                                                                    .padding(
-                                                                        Gaps::new_symmetric(
-                                                                            12.0, 16.0,
-                                                                        ),
-                                                                    )
-                                                                    .direction(Direction::Horizontal)
-                                                                    .main_align(
-                                                                        Alignment::SpaceBetween,
-                                                                    )
-                                                                    .cross_align(Alignment::Center)
+                                                                label()
+                                                                    .font_size(13.0)
+                                                                    .color(DANGER_RED)
+                                                                    .text(format!(
+                                                                        "New: v{}",
+                                                                        info.latest_version
+                                                                            .clone()
+                                                                            .unwrap_or_default()
+                                                                    )),
+                                                            )
+                                                            .child(
+                                                                Ripple::new()
+                                                                    .color((255u8, 255u8, 255u8, 80u8))
                                                                     .child(
-                                                                        label()
-                                                                            .font_size(13.0)
-                                                                            .color(DANGER_RED)
-                                                                            .text(format!(
-                                                                                "New: v{}",
-                                                                                info.latest_version
-                                                                                    .clone()
-                                                                                    .unwrap_or_default()
-                                                                            )),
-                                                                    )
-                                                                    .child(
-                                                                        Ripple::new()
-                                                                            .color((
-                                                                                255u8, 255u8, 255u8,
-                                                                                80u8,
-                                                                            ))
+                                                                        rect()
+                                                                            .padding(Gaps::new_symmetric(6.0, 12.0))
+                                                                            .background(if is_hover {
+                                                                                with_alpha(accent, 255)
+                                                                            } else {
+                                                                                with_alpha(accent, 40)
+                                                                            })
+                                                                            .border(
+                                                                                Border::new()
+                                                                                    .width(1.0)
+                                                                                    .fill(with_alpha(accent, 255)),
+                                                                            )
+                                                                            .corner_radius(RADIUS_CTRL)
+                                                                            .on_press(on_download)
+                                                                            .on_pointer_enter(move |_| {
+                                                                                hover_update.set(true);
+                                                                                Cursor::set(CursorIcon::Pointer);
+                                                                            })
+                                                                            .on_pointer_leave(move |_| {
+                                                                                hover_update.set(false);
+                                                                                Cursor::set(CursorIcon::Default);
+                                                                            })
                                                                             .child(
-                                                                                rect()
-                                                                                    .padding(
-                                                                                        Gaps::new_symmetric(
-                                                                                            6.0,
-                                                                                            12.0,
-                                                                                        ),
-                                                                                    )
-                                                                                    .background(
-                                                                                        if is_hover {
-                                                                                            with_alpha(
-                                                                                                accent,
-                                                                                                255,
-                                                                                            )
-                                                                                        } else {
-                                                                                            with_alpha(
-                                                                                                accent,
-                                                                                                40,
-                                                                                            )
-                                                                                        },
-                                                                                    )
-                                                                                    .border(
-                                                                                        Border::new()
-                                                                                            .width(1.0)
-                                                                                            .fill(
-                                                                                                with_alpha(
-                                                                                                    accent,
-                                                                                                    255,
-                                                                                                ),
-                                                                                            ),
-                                                                                    )
-                                                                                    .corner_radius(
-                                                                                        RADIUS_CTRL,
-                                                                                    )
-                                                                                    .on_press(
-                                                                                        on_download,
-                                                                                    )
-                                                                                    .on_pointer_enter(
-                                                                                        move |_| {
-                                                                                            hover_update
-                                                                                                .set(
-                                                                                                    true,
-                                                                                                );
-                                                                                            Cursor::set(
-                                                                                                CursorIcon::Pointer,
-                                                                                            );
-                                                                                        },
-                                                                                    )
-                                                                                    .on_pointer_leave(
-                                                                                        move |_| {
-                                                                                            hover_update
-                                                                                                .set(
-                                                                                                    false,
-                                                                                                );
-                                                                                            Cursor::set(
-                                                                                                CursorIcon::Default,
-                                                                                            );
-                                                                                        },
-                                                                                    )
-                                                                                    .child(
-                                                                                        label()
-                                                                                            .font_size(
-                                                                                                11.0,
-                                                                                            )
-                                                                                            .font_weight(
-                                                                                                FontWeight::BOLD,
-                                                                                            )
-                                                                                            .color(
-                                                                                                if is_hover {
-                                                                                                    with_alpha(
-                                                                                                        (255, 255, 255),
-                                                                                                        255,
-                                                                                                    )
-                                                                                                } else {
-                                                                                                    with_alpha(
-                                                                                                        accent,
-                                                                                                        255,
-                                                                                                    )
-                                                                                                },
-                                                                                            )
-                                                                                            .text(
-                                                                                                "DOWNLOAD",
-                                                                                            ),
-                                                                                    ),
+                                                                                label()
+                                                                                    .font_size(11.0)
+                                                                                    .font_weight(FontWeight::BOLD)
+                                                                                    .color(if is_hover {
+                                                                                        with_alpha((255, 255, 255), 255)
+                                                                                    } else {
+                                                                                        with_alpha(accent, 255)
+                                                                                    })
+                                                                                    .text("DOWNLOAD"),
                                                                             ),
                                                                     ),
                                                             ),
@@ -408,14 +340,6 @@ impl Component for SettingsView {
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
-
-/// 分组 card 内行间分隔线（1px，border_subtle）
-fn row_divider(tokens: ThemeTokens) -> impl IntoElement {
-    rect()
-        .width(Size::fill())
-        .height(Size::px(1.0))
-        .background(tokens.border_subtle)
-}
 
 fn theme_chip(
     icon: Svg,
