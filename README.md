@@ -2,8 +2,6 @@
 
 私有 AI 代理技能库，存放与日常开发工作高度相关的专属 AI 技能 (Skills)。每个技能均自包含，可通过 `skm` 按需链接到工作流。
 
-> ⚠️ 本仓库为**私有仓库**，严禁公开。
-
 ---
 
 ## 技能清单
@@ -31,8 +29,6 @@
 ---
 
 ## 安装与使用
-
-> 本仓库为私有仓库，安装前请确保本机 Git 已配置 GitHub 访问权限。
 
 ```bash
 skm install mocikadev/mocika-skills:agents-map --link-to all
