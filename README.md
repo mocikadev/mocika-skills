@@ -32,15 +32,19 @@
 
 ## 安装与使用
 
-```bash
-# 链接单个技能到本地工作流
-skm link ./agents-map
+> 本仓库为私有仓库，安装前请确保本机 Git 已配置 GitHub 访问权限。
 
-# 链接所有技能
-skm link ./agents-map ./freya-mid-desktop
+```bash
+# 安装单个技能到所有 Agent
+skm install mocikadev/mocika-skills:agents-map --link-to all
+skm install mocikadev/mocika-skills:freya-mid-desktop --link-to all
+
+# 安装后补链接到指定 Agent（如只需 opencode）
+skm link agents-map opencode
+skm link freya-mid-desktop opencode
 ```
 
-链接后，在任意 AI Agent 会话中加载对应 skill 即可使用。
+安装后，在任意 AI Agent 会话中加载对应 skill 即可使用。
 
 ## 仓库规范
 
