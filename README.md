@@ -6,14 +6,16 @@ AI 代理技能库，存放与日常开发工作高度相关的专属 AI 技能 
 
 ## 技能清单
 
-### [agents-map](./agents-map/)
+### [project-ai-system](./project-ai-system/)
 
-为项目生成并维护"地图式" AI 导航体系。
+为项目生成并维护项目级 AI 工作系统。
 
-- **解决什么问题**：新项目没有 AI 上下文、AGENTS.md 越写越长、文档散落混乱
-- **四种模式**：生成（新项目初始化）、修订（压缩重构）、审计（只看不改）、整理（归类现有文档）
-- **产物**：AGENTS.md 草稿 + docs/ 骨架（9 目录）+ project skill 建议清单
-- **触发示例**：`帮我初始化项目的 AGENTS.md` / `检查一下我的 AGENTS.md 是否规范`
+> 原 `agents-map` 已升级并改名为 `project-ai-system`。
+
+- **解决什么问题**：新项目需求不清、缺少 AI 执行规范、AGENTS.md 越写越长、文档散落混乱
+- **五种模式**：启动（澄清 spec 和执行协议）、生成（建立入口导航）、修订（压缩重构）、审计（只看不改）、整理（归类现有文档）
+- **产物**：项目 spec + AI 执行协议 + 入口文件草稿 + docs/ 骨架 + project skill 建议清单
+- **触发示例**：`帮我先把新项目需求和 AI 执行规则定清楚` / `检查一下我的 AGENTS.md 是否规范`
 
 ---
 
@@ -31,7 +33,7 @@ AI 代理技能库，存放与日常开发工作高度相关的专属 AI 技能 
 ## 安装与使用
 
 ```bash
-skm install mocikadev/mocika-skills:agents-map --link-to all
+skm install mocikadev/mocika-skills:project-ai-system --link-to all
 skm install mocikadev/mocika-skills:freya-mid-desktop --link-to all
 ```
 
