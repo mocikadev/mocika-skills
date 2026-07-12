@@ -6,6 +6,17 @@ AI 代理技能库，存放与日常开发工作高度相关的专属 AI 技能 
 
 ## 技能清单
 
+### [arch-guard](./arch-guard/)
+
+在代码变更前后守护职责边界、模块拆分和依赖方向。
+
+- **解决什么问题**：防止 AI 把新职责持续堆入巨型文件或模块，也防止机械分层和过度设计
+- **能力**：L0–L3 变更分级；函数到服务的多层级边界判断；package、crate、workspace 拆分评估；实现后架构验收
+- **产物**：架构摘要、候选方案与取舍、边界契约、验证结果和后续治理建议
+- **触发示例**：`使用 arch-guard 实现这个功能` / `检查这里是否应该拆 module 或 crate`
+
+---
+
 ### [project-ai-system](./project-ai-system/)
 
 为项目生成并维护项目级 AI 工作系统。
@@ -33,6 +44,7 @@ AI 代理技能库，存放与日常开发工作高度相关的专属 AI 技能 
 ## 安装与使用
 
 ```bash
+skm install mocikadev/mocika-skills:arch-guard --link-to all
 skm install mocikadev/mocika-skills:project-ai-system --link-to all
 skm install mocikadev/mocika-skills:freya-mid-desktop --link-to all
 ```
